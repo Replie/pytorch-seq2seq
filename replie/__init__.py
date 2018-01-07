@@ -52,7 +52,7 @@ def read_question_answers(source_file, target_file, reverse=False):
 def normalize_string(s):
     s = s.lower().strip()
     s = re.sub(r"([.!?,])", r" \1", s)
-    s = re.sub(r"[^a-zA-Zא-ת.!?']+", r"", s)
+    s = re.sub(r"[^a-zA-Zא-ת.!?']+", r" ", s)
     return s
 
 
@@ -77,6 +77,9 @@ parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
 parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
+parser.add_argument('--debug', action='store_true', dest='debug',
+                    default=False,
+                    help='Indicates if training has to be resumed from the latest checkpoint')
 parser.add_argument('--log-level', dest='log_level',
                     default='info',
                     help='Logging level.')
@@ -84,11 +87,19 @@ parser.add_argument('--log-level', dest='log_level',
 opt = parser.parse_args()
 
 LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+handlers  = list()
 formatter = logging.Formatter(LOG_FORMAT)
 f_handler = logging.FileHandler('log_seq2seq.log')
 f_handler.setFormatter(formatter)
 f_handler.setLevel(level=getattr(logging, opt.log_level.upper()))
-logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()), handlers=[f_handler])
+handlers.append(f_handler)
+
+if opt.debug:
+    s_handler = logging.StreamHandler()
+    s_handler.setFormatter(formatter)
+    s_handler.setLevel(level=getattr(logging, opt.log_level.upper()))
+    handlers.append(s_handler)
+logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()), handlers=handlers)
 logging.info(opt)
 
 if opt.load_checkpoint is not None:
@@ -104,9 +115,9 @@ else:
     src = SourceField()
     tgt = TargetField()
     max_len = 50
-    source_file = os.path.join(default_data_dir, 'reddit/q_w01.txt')
-    target_file = os.path.join(default_data_dir, 'reddit/a_w01.txt')
-    data_file = os.path.join(default_data_dir, 'reddit/data.txt')
+    source_file = os.path.join(default_data_dir, 'stam/q_w01.txt')
+    target_file = os.path.join(default_data_dir, 'stam/a_w01.txt')
+    data_file = os.path.join(default_data_dir, 'stam/data.txt')
 
     pairs = read_question_answers(source_file=source_file, target_file=target_file)
     with open(data_file, 'w') as data:
@@ -173,11 +184,11 @@ else:
 
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
-                          checkpoint_every=50,
+                          checkpoint_every=500,
                           print_every=10, expt_dir=opt.expt_dir)
 
     seq2seq = t.train(seq2seq, train,
-                      num_epochs=100, dev_data=None,
+                      num_epochs=1000, dev_data=None,
                       optimizer=optimizer,
                       teacher_forcing_ratio=0.5,
                       resume=opt.resume)
