@@ -87,7 +87,7 @@ parser.add_argument('--log-level', dest='log_level',
 opt = parser.parse_args()
 
 LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-handlers  = list()
+handlers = list()
 formatter = logging.Formatter(LOG_FORMAT)
 f_handler = logging.FileHandler('log_seq2seq.log')
 f_handler.setFormatter(formatter)
@@ -115,9 +115,9 @@ else:
     src = SourceField()
     tgt = TargetField()
     max_len = 50
-    source_file = os.path.join(default_data_dir, 'stam/q_w01.txt')
-    target_file = os.path.join(default_data_dir, 'stam/a_w01.txt')
-    data_file = os.path.join(default_data_dir, 'stam/data.txt')
+    source_file = os.path.join(default_data_dir, opt.train_path, 'q_w01.txt')
+    target_file = os.path.join(default_data_dir, opt.train_path, 'a_w01.txt')
+    data_file = os.path.join(default_data_dir, opt.train_path, 'data.txt')
 
     pairs = read_question_answers(source_file=source_file, target_file=target_file)
     with open(data_file, 'w') as data:
