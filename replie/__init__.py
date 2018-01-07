@@ -85,11 +85,10 @@ opt = parser.parse_args()
 
 LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 formatter = logging.Formatter(LOG_FORMAT)
-logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()))
 f_handler = logging.FileHandler('log_seq2seq.log')
 f_handler.setFormatter(formatter)
 f_handler.setLevel(level=getattr(logging, opt.log_level.upper()))
-logging._addHandlerRef(f_handler)
+logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()), handlers=[f_handler])
 logging.info(opt)
 
 if opt.load_checkpoint is not None:
