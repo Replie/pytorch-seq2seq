@@ -10,23 +10,51 @@ import json
 import os
 import argparse
 import logging
+import re
 
 import torch
 from os.path import dirname
-from torch.optim.lr_scheduler import StepLR
 import torchtext
 
-import seq2seq
-from replie.utils import read_question_answers
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
-from seq2seq.optim import Optimizer
 from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
 raw_input = input  # Python 3
+
+
+def read_question_answers(source_file, target_file, reverse=False):
+    # Read the file and split into lines
+    question = open(source_file).read().strip().split('\n')
+    answers = open(target_file).read().strip().split('\n')
+
+    # Split every line into pairs and normalize
+    # pairs = [[normalize_string(s) for s in question] normalize_string(s) for s in answers]
+
+    pairs = zip([normalize_string(s) for s in question], [normalize_string(s) for s in answers])
+    # pairs = zip(question, answers)
+    # pairs = [[normalize_string(s) for s in l.split('\t')] for l in lines]
+
+    # Reverse pairs, make Lang instances
+    if reverse:
+        pairs = [list(reversed(p)) for p in pairs]
+        # output_lang = Lang('eng')
+    else:
+        pairs = [list((p)) for p in pairs]
+        # output_lang = Lang('eng')
+
+    return pairs
+
+
+def normalize_string(s):
+    s = s.lower().strip()
+    s = re.sub(r"([.!?,])", r" \1", s)
+    s = re.sub(r"[^a-zA-Zא-ת.!?']+", r"", s)
+    return s
+
 
 default_data_dir = os.path.join(dirname(dirname(os.path.abspath(__file__))), 'data')
 # Sample usage:
@@ -80,6 +108,7 @@ else:
     with open(data_file, 'w') as data:
         for pair in pairs:
             data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
+
 
     def len_filter(example):
         return len(example.src) <= max_len and len(example.tgt) <= max_len
@@ -144,7 +173,7 @@ else:
                           print_every=10, expt_dir=opt.expt_dir)
 
     seq2seq = t.train(seq2seq, train,
-                      num_epochs=100, dev_data=dev,
+                      num_epochs=100, dev_data=None,
                       optimizer=optimizer,
                       teacher_forcing_ratio=0.5,
                       resume=opt.resume)
