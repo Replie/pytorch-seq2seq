@@ -52,7 +52,7 @@ def read_question_answers(source_file, target_file, reverse=False):
 def normalize_string(s):
     s = s.lower().strip()
     s = re.sub(r"([.!?,])", r" \1", s)
-    s = re.sub(r"[^a-zA-Zא-ת.!?']+", r" ", s)
+    s = re.sub(r"[^a-zA-Zא-ת.!?'`]+", r" ", s)
     return s
 
 
