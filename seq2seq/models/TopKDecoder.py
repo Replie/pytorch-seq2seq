@@ -237,10 +237,8 @@ class TopKDecoder(torch.nn.Module):
             h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
         else:
             h_n = torch.zeros(nw_hidden[0].size())
-
-        if torch.cuda.is_available():
-            h_n = h_n.cuda()
-
+            if torch.cuda.is_available():
+                h_n = h_n.cuda()
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
         # Similar to `h_n`
 
