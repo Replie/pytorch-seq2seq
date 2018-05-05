@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+device = torch.cuda if torch.cuda.is_available() else torch
+
 
 def _inflate(tensor, times, dim):
     """
@@ -16,23 +18,23 @@ def _inflate(tensor, times, dim):
             A :class:`Tensor`
 
         Examples::
-            >> a = torch.LongTensor([[1, 2], [3, 4]])
+            >> a = device.LongTensor([[1, 2], [3, 4]])
             >> a
             1   2
             3   4
-            [torch.LongTensor of size 2x2]
+            [device.LongTensor of size 2x2]
             >> b = ._inflate(a, 2, dim=1)
             >> b
             1   2   1   2
             3   4   3   4
-            [torch.LongTensor of size 2x4]
+            [device.LongTensor of size 2x4]
             >> c = _inflate(a, 2, dim=0)
             >> c
             1   2
             3   4
             1   2
             3   4
-            [torch.LongTensor of size 4x2]
+            [device.LongTensor of size 4x2]
 
         """
     repeat_dims = [1] * tensor.dim()
@@ -40,7 +42,7 @@ def _inflate(tensor, times, dim):
     return tensor.repeat(*repeat_dims)
 
 
-class TopKDecoder(torch.nn.Module):
+class TopKDecoder(device.nn.Module):
     r"""
     Top-K decoding with beam search.
 
@@ -55,8 +57,8 @@ class TopKDecoder(torch.nn.Module):
           in the hidden state `h` of encoder. Used as the initial hidden state of the decoder.
         - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
           Used for attention mechanism (default is `None`).
-        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state
-          (default is `torch.nn.functional.log_softmax`).
+        - **function** (device.nn.Module): A function used to generate symbols from RNN hidden state
+          (default is `device.nn.functional.log_softmax`).
         - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is
           drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
           teacher forcing would be used (default is 0).
@@ -91,10 +93,7 @@ class TopKDecoder(torch.nn.Module):
         inputs, batch_size, max_length = self.rnn._validate_args(inputs, encoder_hidden, encoder_outputs,
                                                                  function, teacher_forcing_ratio)
 
-        self.pos_index = Variable(torch.LongTensor(range(batch_size)) * self.k).view(-1, 1)
-
-        if torch.cuda.is_available():
-            self.pos_index = self.pos_index.cuda()
+        self.pos_index = Variable(device.LongTensor(range(batch_size)) * self.k).view(-1, 1)
 
         # Inflate the initial hidden states to be of size: b*k x h
         encoder_hidden = self.rnn._init_state(encoder_hidden)
@@ -114,19 +113,13 @@ class TopKDecoder(torch.nn.Module):
 
         # Initialize the scores; for the first step,
         # ignore the inflated copies to avoid duplicate entries in the top k
-        sequence_scores = torch.Tensor(batch_size * self.k, 1)
+        sequence_scores = device.Tensor(batch_size * self.k, 1)
         sequence_scores.fill_(-float('Inf'))
-        sequence_scores.index_fill_(0, torch.LongTensor([i * self.k for i in range(0, batch_size)]), 0.0)
+        sequence_scores.index_fill_(0, device.LongTensor([i * self.k for i in range(0, batch_size)]), 0.0)
         sequence_scores = Variable(sequence_scores)
 
-        if torch.cuda.is_available():
-            sequence_scores = sequence_scores.cuda()
-
         # Initialize the input vector
-        input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS] * batch_size * self.k]), 0, 1))
-
-        if torch.cuda.is_available():
-            input_var = input_var.cuda()
+        input_var = Variable(device.transpose(device.LongTensor([[self.SOS] * batch_size * self.k]), 0, 1))
 
         # Store decisions for backtracking
         stored_outputs = list()
@@ -234,11 +227,9 @@ class TopKDecoder(torch.nn.Module):
         # the last hidden state of decoding.
         if lstm:
             state_size = nw_hidden[0][0].size()
-            h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
+            h_n = tuple([device.zeros(state_size), device.zeros(state_size)])
         else:
-            h_n = torch.zeros(nw_hidden[0].size())
-            if torch.cuda.is_available():
-                h_n = h_n.cuda()
+            h_n = device.zeros(nw_hidden[0].size())
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
         # Similar to `h_n`
 
