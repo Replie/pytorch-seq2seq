@@ -198,10 +198,12 @@ else:
 
     num_epochs = 1000
     batch_size = 32
-    if opt.debug is True:
-        num_epochs = 6
     checkpoint_every = num_epochs / 10
     print_every = num_epochs / 100
+    if opt.debug is True:
+        num_epochs = 6
+        checkpoint_every = 10
+        print_every = 1
 
     t = SupervisedTrainer(loss=loss, batch_size=num_epochs,
                           checkpoint_every=checkpoint_every,
