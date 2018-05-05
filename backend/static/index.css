@@ -1,0 +1,15 @@
+
+body {
+    height: 500px;
+    width: 50%;
+    margin-left: 200px;
+}
+.section {
+
+}
+.dropdown {
+    width: 25%;
+}
+.list-group {
+    margin-top: 20px;
+}
