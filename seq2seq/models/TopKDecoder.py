@@ -227,9 +227,9 @@ class TopKDecoder(torch.nn.Module):
         # the last hidden state of decoding.
         if lstm:
             state_size = nw_hidden[0][0].size()
-            h_n = tuple([device.zeros(state_size), device.zeros(state_size)])
+            h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
         else:
-            h_n = device.zeros(nw_hidden[0].size())
+            h_n = torch.zeros(nw_hidden[0].size())
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
         # Similar to `h_n`
 
