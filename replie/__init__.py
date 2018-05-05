@@ -7,9 +7,11 @@ Description:
 
 """
 import json
+import math
 import os
 import argparse
 import logging
+import random
 import re
 
 import torch
@@ -17,10 +19,10 @@ from os.path import dirname
 import torchtext
 
 from seq2seq.trainer import SupervisedTrainer
-from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
+from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq, TopKDecoder
 from seq2seq.loss import Perplexity
 from seq2seq.dataset import SourceField, TargetField
-from seq2seq.evaluator import Predictor
+from seq2seq.evaluator import Predictor, Evaluator
 from seq2seq.util.checkpoint import Checkpoint
 
 raw_input = input  # Python 3
@@ -57,13 +59,11 @@ def normalize_string(s):
 
 
 default_data_dir = os.path.join(dirname(dirname(os.path.abspath(__file__))), 'data')
-# Sample usage:
-#     # training
-#     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH
-#     # resuming from the latest checkpoint of the experiment
-#      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --resume
-#      # resuming from a specific checkpoint
-#      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --load_checkpoint $CHECKPOINT_DIR
+# Sample usage: # training python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir
+# $EXPT_PATH # resuming from the latest checkpoint of the experiment python examples/sample.py --train_path
+# $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --resume # resuming from a specific checkpoint python
+# examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --load_checkpoint
+# $CHECKPOINT_DIR
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--train_path', action='store', dest='train_path',
@@ -115,18 +115,24 @@ else:
     src = SourceField()
     tgt = TargetField()
     max_len = 50
-    source_file = os.path.join(default_data_dir, opt.train_path, 'q_w01.txt')
-    target_file = os.path.join(default_data_dir, opt.train_path, 'a_w01.txt')
+    source_file = os.path.join(default_data_dir, opt.train_path, 'email-to-filter.txt')
+    target_file = os.path.join(default_data_dir, opt.train_path, 'email-from-filter.txt')
     data_file = os.path.join(default_data_dir, opt.train_path, 'data.txt')
+    dev_data_file = os.path.join(default_data_dir, opt.train_path, 'dev-data.txt')
 
     pairs = read_question_answers(source_file=source_file, target_file=target_file)
     with open(data_file, 'w') as data:
         for pair in pairs:
             data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
+    with open(data_file, 'w') as data:
+            for i in range(0, int((len(pairs) * 20) / 100)):
+                pair = random.choice(pairs)
+                data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
 
 
     def len_filter(example):
-        return len(example.src) <= max_len and len(example.tgt) <= max_len
+        return len(example.src) <= max_len and len(example.tgt) <= max_len and len(example.src) > 0 and len(
+            example.tgt) > 0
 
 
     train = torchtext.data.TabularDataset(
@@ -155,21 +161,26 @@ else:
     pad = tgt.vocab.stoi[tgt.pad_token]
     loss = Perplexity(weight, pad)
     if torch.cuda.is_available():
+        logging.info("Yayyy We got CUDA")
         loss.cuda()
 
     seq2seq = None
     optimizer = None
     if not opt.resume:
-        # Initialize model
         hidden_size = 128
         bidirectional = True
         encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
-                             bidirectional=bidirectional, variable_lengths=True)
-        decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size * 2 if bidirectional else hidden_size,
-                             dropout_p=0.2, use_attention=True, bidirectional=bidirectional,
+                             bidirectional=bidirectional,
+                             rnn_cell='lstm',
+                             variable_lengths=True)
+        decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size * 2,
+                             dropout_p=0.2, use_attention=True,
+                             bidirectional=bidirectional,
+                             rnn_cell='lstm',
                              eos_id=tgt.eos_id, sos_id=tgt.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
+            logging.info("Yayyy We got CUDA")
             seq2seq.cuda()
 
         for param in seq2seq.parameters():
@@ -193,9 +204,16 @@ else:
                       teacher_forcing_ratio=0.5,
                       resume=opt.resume)
 
-predictor = Predictor(seq2seq, input_vocab, output_vocab)
+    evaluator = Evaluator(loss=loss, batch_size=32)
+    dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
+    logging.info("Dev Loss: %s", dev_loss)
+    logging.info("Accuracy: %s", dev_loss)
 
+beam_search = Seq2seq(seq2seq.encoder, TopKDecoder(seq2seq.decoder, 3))
+
+predictor = Predictor(beam_search, input_vocab, output_vocab)
 while True:
     seq_str = raw_input("Type in a source sequence:")
     seq = seq_str.strip().split()
-    print(predictor.predict(seq))
+    predictor.predict_n(seq, n=2)
+    print()

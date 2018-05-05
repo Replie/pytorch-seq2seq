@@ -39,8 +39,12 @@ logging.info(opt)
 src = SourceField()
 tgt = TargetField()
 max_len = 50
+
+
 def len_filter(example):
     return len(example.src) <= max_len and len(example.tgt) <= max_len
+
+
 train = torchtext.data.TabularDataset(
     path=opt.train_path, format='tsv',
     fields=[('src', src), ('tgt', tgt)],
@@ -64,7 +68,8 @@ if torch.cuda.is_available():
     loss.cuda()
 
 if opt.load_checkpoint is not None:
-    logging.info("loading checkpoint from {}".format(os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)))
+    logging.info("loading checkpoint from {}".format(
+        os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)))
     checkpoint_path = os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)
     checkpoint = Checkpoint.load(checkpoint_path)
     seq2seq = checkpoint.model
@@ -75,7 +80,7 @@ else:
     optimizer = None
     if not opt.resume:
         # Initialize model
-        hidden_size=128
+        hidden_size = 128
         bidirectional = True
         encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
                              bidirectional=bidirectional,

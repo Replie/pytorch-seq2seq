@@ -10,7 +10,8 @@ checkpoint/*
 __pycache__/
 *.py[cod]
 *$py.class
-
+replie/experiment
+*.log
 # Distribution / packaging
 .Python
 env/
