@@ -115,20 +115,8 @@ else:
     src = SourceField()
     tgt = TargetField()
     max_len = 50
-    source_file = os.path.join(default_data_dir, opt.train_path, 'email-to-filter.txt')
-    target_file = os.path.join(default_data_dir, opt.train_path, 'email-from-filter.txt')
+
     data_file = os.path.join(default_data_dir, opt.train_path, 'data.txt')
-    dev_data_file = os.path.join(default_data_dir, opt.train_path, 'dev-data.txt')
-
-    pairs = read_question_answers(source_file=source_file, target_file=target_file)
-    with open(data_file, 'w') as data:
-        for pair in pairs:
-            data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
-    with open(dev_data_file, 'w') as data:
-        for i in range(0, int((len(pairs) * 20) / 100)):
-            pair = random.choice(pairs)
-            data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
-
 
     def len_filter(example):
         return len(example.src) <= max_len and len(example.tgt) <= max_len and len(example.src) > 0 and len(
