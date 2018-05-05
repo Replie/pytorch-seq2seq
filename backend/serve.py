@@ -21,7 +21,7 @@ app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'flaskr.db'),
     SECRET_KEY='development key',
     USERNAME='admin',
-    PASSWORD='default',
+    PASSWORD='mmpoopodjsofsanfkdna',
     EXPERIMENT_PATH="/home/project10/project/experiment"
 ))
 
