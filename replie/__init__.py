@@ -125,9 +125,9 @@ else:
         for pair in pairs:
             data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
     with open(data_file, 'w') as data:
-            for i in range(0, int((len(pairs) * 20) / 100)):
-                pair = random.choice(pairs)
-                data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
+        for i in range(0, int((len(pairs) * 20) / 100)):
+            pair = random.choice(pairs)
+            data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
 
 
     def len_filter(example):
@@ -215,5 +215,6 @@ predictor = Predictor(beam_search, input_vocab, output_vocab)
 while True:
     seq_str = raw_input("Type in a source sequence:")
     seq = seq_str.strip().split()
-    predictor.predict_n(seq, n=2)
-    print()
+    results = predictor.predict_n(seq, n=2)
+    for i, res in enumerate(results):
+        print('option %s: %s\n', i + 1, res)
