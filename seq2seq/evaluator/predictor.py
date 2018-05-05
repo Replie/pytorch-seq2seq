@@ -66,7 +66,7 @@ class Predictor(object):
         other = self.get_decoder_features(src_seq)
 
         result = []
-        for x in range(0, int(n)):
+        for x in range(0, min(int(n),len(other['topk_length'][0]))):
             length = other['topk_length'][0][x]
             tgt_id_seq = [other['topk_sequence'][di][0, x, 0].item() for di in range(length)]
             tgt_seq = [self.tgt_vocab.itos[tok] for tok in tgt_id_seq]

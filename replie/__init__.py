@@ -214,6 +214,6 @@ predictor = Predictor(beam_search, input_vocab, output_vocab)
 while True:
     seq_str = raw_input("Type in a source sequence:")
     seq = seq_str.strip().split()
-    results = predictor.predict_n(seq, n=10)
+    results = predictor.predict_n(seq, n=3)
     for i, res in enumerate(results):
         print('option %s: %s\n', i + 1, res)
