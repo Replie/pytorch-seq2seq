@@ -124,7 +124,7 @@ else:
     with open(data_file, 'w') as data:
         for pair in pairs:
             data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
-    with open(data_file, 'w') as data:
+    with open(dev_data_file, 'w') as data:
         for i in range(0, int((len(pairs) * 20) / 100)):
             pair = random.choice(pairs)
             data.write(json.dumps({'src': pair[0], 'tgt': pair[1]}) + '\n')
@@ -178,6 +178,7 @@ else:
                              bidirectional=bidirectional,
                              rnn_cell='lstm',
                              eos_id=tgt.eos_id, sos_id=tgt.sos_id)
+
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
             logging.info("Yayyy We got CUDA")
@@ -194,27 +195,35 @@ else:
         # optimizer.set_scheduler(scheduler)
 
     # train
-    t = SupervisedTrainer(loss=loss, batch_size=32,
-                          checkpoint_every=500,
-                          print_every=10, expt_dir=opt.expt_dir)
+
+    num_epochs = 1000
+    batch_size = 32
+    if opt.debug is True:
+        num_epochs = 6
+    checkpoint_every = num_epochs / 10
+    print_every = num_epochs / 100
+
+    t = SupervisedTrainer(loss=loss, batch_size=num_epochs,
+                          checkpoint_every=checkpoint_every,
+                          print_every=print_every, expt_dir=opt.expt_dir)
 
     seq2seq = t.train(seq2seq, train,
-                      num_epochs=1000, dev_data=None,
+                      num_epochs=num_epochs, dev_data=dev,
                       optimizer=optimizer,
                       teacher_forcing_ratio=0.5,
                       resume=opt.resume)
 
-    evaluator = Evaluator(loss=loss, batch_size=32)
+    evaluator = Evaluator(loss=loss, batch_size=batch_size)
     dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
     logging.info("Dev Loss: %s", dev_loss)
     logging.info("Accuracy: %s", dev_loss)
 
-beam_search = Seq2seq(seq2seq.encoder, TopKDecoder(seq2seq.decoder, 3))
+beam_search = Seq2seq(seq2seq.encoder, TopKDecoder(seq2seq.decoder, 4))
 
 predictor = Predictor(beam_search, input_vocab, output_vocab)
 while True:
     seq_str = raw_input("Type in a source sequence:")
     seq = seq_str.strip().split()
-    results = predictor.predict_n(seq, n=2)
+    results = predictor.predict_n(seq, n=10)
     for i, res in enumerate(results):
         print('option %s: %s\n', i + 1, res)
