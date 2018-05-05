@@ -225,11 +225,17 @@ class TopKDecoder(torch.nn.Module):
         # If a (top-k) sequence ends early in decoding, `h_n` contains
         # its hidden state when it sees EOS.  Otherwise, `h_n` contains
         # the last hidden state of decoding.
+
+        cuda0 = None
+        if torch.cuda.is_available():
+            cuda0 = torch.device('cuda:0')
+
         if lstm:
             state_size = nw_hidden[0][0].size()
-            h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
+            h_n = tuple([torch.zeros(state_size, device=cuda0), torch.zeros(state_size, device=cuda0)])
         else:
-            h_n = torch.zeros(nw_hidden[0].size())
+            h_n = torch.zeros(nw_hidden[0].size(), device=cuda0)
+
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
         # Similar to `h_n`
 
