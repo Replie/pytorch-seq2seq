@@ -42,7 +42,7 @@ def _inflate(tensor, times, dim):
     return tensor.repeat(*repeat_dims)
 
 
-class TopKDecoder(device.nn.Module):
+class TopKDecoder(torch.nn.Module):
     r"""
     Top-K decoding with beam search.
 
