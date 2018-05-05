@@ -54,7 +54,7 @@ def predict():
 
 @app.route("/", methods=["GET"])
 def index():
-    models = sorted(checkpoints)[-5:]
+    models = sorted(checkpoints)[-20:]
     return render_template('index.html', models=models)
 
 
