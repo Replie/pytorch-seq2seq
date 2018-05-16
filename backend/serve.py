@@ -12,6 +12,7 @@ from os.path import dirname
 from backend import predictor
 from flask import Flask, jsonify, request, render_template
 
+from backend.cors import crossdomain
 from seq2seq.util.checkpoint import Checkpoint
 
 from logging.config import dictConfig
@@ -81,6 +82,7 @@ def get_args(req):
 
 
 @app.route("/_predict", methods=["GET", "POST", "OPTIONS"])
+@crossdomain(origin='*', headers="Content-Type")
 def predict():
     args = get_args(request)
     seq_str = args.get('seq_str')

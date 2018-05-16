@@ -47,6 +47,10 @@ def run_training(opt, default_data_dir):
             return (len(example.src) <= max_len) and (len(example.tgt) <= max_len) \
                    and (len(example.src) > 0) and (len(example.tgt) > 0)
 
+        def char_len_filter(example):  # TODO different LENGHT
+            return (len(example.src) <= max_len) and (len(example.tgt) <= max_len) \
+                   and (len(example.src) > 0) and (len(example.tgt) > 0)
+
         train = torchtext.data.TabularDataset(
             path=data_file, format='json',
             fields={'src': ('src', src), 'tgt': ('tgt', tgt)},

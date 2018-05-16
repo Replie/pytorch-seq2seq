@@ -2,6 +2,7 @@ import torch.nn as nn
 
 from .baseRNN import BaseRNN
 
+
 class EncoderRNN(BaseRNN):
     r"""
     Applies a multi-layer RNN to an input sequence.
@@ -42,7 +43,7 @@ class EncoderRNN(BaseRNN):
                  n_layers=1, bidirectional=False, rnn_cell='gru', variable_lengths=False,
                  embedding=None, update_embedding=True):
         super(EncoderRNN, self).__init__(vocab_size, max_len, hidden_size,
-                input_dropout_p, dropout_p, n_layers, rnn_cell)
+                                         input_dropout_p, dropout_p, n_layers, rnn_cell)
 
         self.variable_lengths = variable_lengths
         self.embedding = nn.Embedding(vocab_size, hidden_size)
