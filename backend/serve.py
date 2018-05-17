@@ -82,7 +82,7 @@ def get_args(req):
     return args
 
 
-@app.route("/_predict", methods=["POST", "OPTIONS"])
+@app.route("/_predict", methods=["GET", "POST", "OPTIONS"])
 @crossdomain(origin='*', headers="Content-Type")
 def predict():
     args = get_args(request)
