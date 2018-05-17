@@ -105,7 +105,7 @@ def index():
 
 
 def main(host="0.0.0.0", port=80):
-    app.run(host=host, port=port, debug=True)
+    app.run(host=host, port=port, debug=True, ssl_context='adhoc')
 
 
 if __name__ == "__main__":
