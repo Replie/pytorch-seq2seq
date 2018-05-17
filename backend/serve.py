@@ -104,7 +104,7 @@ def index():
     return render_template('index.html', models=models)
 
 
-def main(host="0.0.0.0", port=80):
+def main(host="0.0.0.0", port=8080):
     app.run(host=host, port=port, debug=True, ssl_context='adhoc')
 
 

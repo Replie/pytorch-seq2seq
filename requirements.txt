@@ -5,3 +5,4 @@ dill
 tqdm
 torchtext
 six
+pyopenssl
