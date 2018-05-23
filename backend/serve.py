@@ -86,9 +86,16 @@ def get_args(req):
 @crossdomain(origin='*', headers="Content-Type")
 def predict():
     args = get_args(request)
-    seq_str = args.get('seq_str')
+    seq_str = None
+    if args is not None:
+        seq_str = args.get('seq_str')
     if seq_str is not None:
-        seq_str = base64.b64decode(seq_str)
+        try:
+            seq_str = base64.b64decode(seq_str)
+        except Exception as e:
+            app.logger.error(str(e))
+            return jsonify({"error": "Bad Request",
+                            "error_description": "expected Base64 encoded data"}), 400
         checkpoint_name = args.get('checkpoint_val', "2018_05_05_16_17_56")
         suggestions = predictor.predict(app.config.get('EXPERIMENT_PATH'),
                                         checkpoint_name=checkpoint_name,
@@ -104,7 +111,7 @@ def index():
     return render_template('index.html', models=models)
 
 
-def main(host="0.0.0.0", port=80):
+def main(host="0.0.0.0", port=5000):
     app.run(host=host, port=port, debug=True)
 
 
