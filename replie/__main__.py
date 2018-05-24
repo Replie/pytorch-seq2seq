@@ -66,10 +66,14 @@ if __name__ == '__main__':
                         default='info',
                         help='Logging level.')
 
+    parser.add_argument('--num_epochs', dest='num_epochs',
+                        default=500,
+                        help='Logging level.')
+
     opt = parser.parse_args()
 
     set_loggers()
 
     default_data_dir = os.path.join(dirname(dirname(os.path.abspath(__file__))))
 
-    replie.run_training(opt, default_data_dir)
+    replie.run_training(opt, default_data_dir, opt.num_epochs)

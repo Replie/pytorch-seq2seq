@@ -23,7 +23,7 @@ from seq2seq.util.checkpoint import Checkpoint
 raw_input = input  # Python 3
 
 
-def run_training(opt, default_data_dir):
+def run_training(opt, default_data_dir, num_epochs=100):
     if opt.load_checkpoint is not None:
         logging.info("loading checkpoint from {}".format(
             os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)))
@@ -116,12 +116,12 @@ def run_training(opt, default_data_dir):
 
         # train
 
-        num_epochs = 1000
+        num_epochs = 500
         batch_size = 32
         checkpoint_every = num_epochs / 10
         print_every = num_epochs / 100
 
-        properties = dict(batch_size=num_epochs,
+        properties = dict(batch_size=batch_size,
                           checkpoint_every=checkpoint_every,
                           print_every=print_every, expt_dir=opt.expt_dir,
                           num_epochs=num_epochs,
