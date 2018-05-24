@@ -120,10 +120,6 @@ def run_training(opt, default_data_dir):
         batch_size = 32
         checkpoint_every = num_epochs / 10
         print_every = num_epochs / 100
-        if opt.debug is True:
-            num_epochs = 6
-            checkpoint_every = 10
-            print_every = 1
 
         properties = dict(batch_size=num_epochs,
                           checkpoint_every=checkpoint_every,
