@@ -93,7 +93,8 @@ def get_args(req):
 @app.route("/_get_epochs", methods=["GET", "POST", "OPTIONS"])
 @crossdomain(origin='*', headers="Content-Type")
 def get_epochs():
-    return jsonify(epoches=sorted(get_epochs_list(get_args(request).get('date'))))
+    args = get_args(request)
+    return jsonify(epoches=sorted(get_epochs_list(args.get('date')), key=int))
 
 
 @app.route("/_get_steps", methods=["GET", "POST", "OPTIONS"])
