@@ -40,6 +40,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
         max_len = 50
 
         data_file = os.path.join(default_data_dir, opt.train_path, 'data.txt')
+        dev_data_file = os.path.join(default_data_dir, opt.train_path, 'dev-data.txt')
 
         logging.info("Starting new Training session on %s", data_file)
 

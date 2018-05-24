@@ -66,12 +66,21 @@ app.config.update(dict(
                                    os.path.join(dirname(dirname(os.path.abspath(__file__))), 'experiment'))
 ))
 
-
-def get_checkpoints():
-    return os.listdir(os.path.join(app.config.get('EXPERIMENT_PATH'), Checkpoint.CHECKPOINT_DIR_NAME))
+BASE_CHECKPOINT_DIR = os.path.join(app.config.get('EXPERIMENT_PATH'), Checkpoint.CHECKPOINT_DIR_NAME)
 
 
-checkpoints = get_checkpoints()
+def get_dates():
+    checkpoints_dir = os.path.join(app.config.get('EXPERIMENT_PATH'), Checkpoint.CHECKPOINT_DIR_NAME)
+    print(checkpoints_dir)
+    return os.listdir(checkpoints_dir)
+
+
+def get_epochs_list(dates_dir):
+    return os.listdir(os.path.join(BASE_CHECKPOINT_DIR, dates_dir))
+
+
+def get_checkpoints(dates_dir, epoch_dir):
+    return os.listdir(os.path.join(BASE_CHECKPOINT_DIR, dates_dir, epoch_dir))
 
 
 def get_args(req):
@@ -80,6 +89,19 @@ def get_args(req):
     elif req.method == "GET":
         args = req.args
     return args
+
+
+@app.route("/_get_epochs", methods=["GET", "POST", "OPTIONS"])
+@crossdomain(origin='*', headers="Content-Type")
+def get_epochs():
+    return jsonify(epoches=get_epochs_list(get_args(request).get('date')))
+
+
+@app.route("/_get_steps", methods=["GET", "POST", "OPTIONS"])
+@crossdomain(origin='*', headers="Content-Type")
+def get_steps():
+    args = get_args(request)
+    return jsonify(steps=get_checkpoints(args.get('date'), args.get('epoch')))
 
 
 @app.route("/_predict", methods=["GET", "POST", "OPTIONS"])
@@ -96,9 +118,13 @@ def predict():
             app.logger.error(str(e))
             return jsonify({"error": "Bad Request",
                             "error_description": "expected Base64 encoded data"}), 400
-        checkpoint_name = args.get('checkpoint_val', "2018_05_05_16_17_56")
-        suggestions = predictor.predict(app.config.get('EXPERIMENT_PATH'),
-                                        checkpoint_name=checkpoint_name,
+        date = args.get('date', "2018_05_24")
+        epoch = args.get('epoch', "200")
+        step = args.get('step', "2018_05_24_20_28_51_S3600")
+        suggestions = predictor.predict(expt_dir=app.config.get('EXPERIMENT_PATH'),
+                                        date=date,
+                                        epoch=epoch,
+                                        step=step,
                                         seq_str=seq_str, n=3)
         return jsonify({"data": {"results": [' '.join(x).strip() for x in suggestions]}}), 200
     else:
@@ -107,7 +133,7 @@ def predict():
 
 @app.route("/", methods=["GET"])
 def index():
-    models = sorted(checkpoints)[-20:]
+    models = sorted(get_dates())
     return render_template('index.html', models=models)
 
 

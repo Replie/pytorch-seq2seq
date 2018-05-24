@@ -9,6 +9,9 @@ body {
 }
 .dropdown {
     width: 25%;
+    float: left;
+    position: relative;
+    margin-bottom: 10px;
 }
 .list-group {
     margin-top: 20px;

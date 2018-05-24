@@ -44,6 +44,24 @@
                 {% endfor %}
             </div>
         </div>
+        <div id="epochs" class="dropdown">
+            <button id="epochs_val" class="btn btn-secondary dropdown-toggle" type="button"
+                    data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                Epochs
+            </button>
+             <div id="epochs_list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            </div>
+        </div>
+        <div id="steps" class="dropdown">
+            <button id="steps_val" class="btn btn-secondary dropdown-toggle" type="button"
+                    data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                Steps
+            </button>
+            <div id="steps_list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            </div>
+        </div>
         <div class="form-group">
             <label for="input_seq"></label>
             <textarea class="form-control" id="input_seq" rows="8"></textarea>
