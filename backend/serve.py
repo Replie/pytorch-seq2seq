@@ -93,14 +93,14 @@ def get_args(req):
 @app.route("/_get_epochs", methods=["GET", "POST", "OPTIONS"])
 @crossdomain(origin='*', headers="Content-Type")
 def get_epochs():
-    return jsonify(epoches=get_epochs_list(get_args(request).get('date')))
+    return jsonify(epoches=sorted(get_epochs_list(get_args(request).get('date'))))
 
 
 @app.route("/_get_steps", methods=["GET", "POST", "OPTIONS"])
 @crossdomain(origin='*', headers="Content-Type")
 def get_steps():
     args = get_args(request)
-    return jsonify(steps=get_checkpoints(args.get('date'), args.get('epoch')))
+    return jsonify(steps=sorted(get_checkpoints(args.get('date'), args.get('epoch'))))
 
 
 @app.route("/_predict", methods=["GET", "POST", "OPTIONS"])
