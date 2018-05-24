@@ -104,6 +104,12 @@ def get_steps():
     return jsonify(steps=sorted(get_checkpoints(args.get('date'), args.get('epoch'))))
 
 
+@app.route("/_get_dates", methods=["GET", "POST", "OPTIONS"])
+@crossdomain(origin='*', headers="Content-Type")
+def _get_dates():
+    return jsonify(dates=sorted(get_dates()))
+
+
 @app.route("/_predict", methods=["GET", "POST", "OPTIONS"])
 @crossdomain(origin='*', headers="Content-Type")
 def predict():
