@@ -9,8 +9,10 @@ function set_checkpoint(value) {
         .done(function (data) {
             let results = data.epoches;
             let res_element = $("#epochs_list");
-            res_element.removeAttr("hidden");
             res_element.empty();
+            let epochs_val = $("#epochs_val");
+            epochs_val.val();
+            epochs_val.text();
             results.forEach(function (element) {
                 console.log(res_element);
                 res_element.append(
@@ -28,6 +30,9 @@ function get_epoches(param) {
     let epochs_val = $("#epochs_val");
     epochs_val.val(value);
     epochs_val.text(value);
+    let steps_val = $("#steps_val");
+    steps_val.val();
+    steps_val.text();
     $.getJSON("_get_steps", {
         date: checkpoint_val,
         epoch: value,
@@ -36,7 +41,6 @@ function get_epoches(param) {
         .done(function (data) {
             let results = data.steps;
             let res_element = $("#steps_list");
-            res_element.removeAttr("hidden");
             res_element.empty();
             results.forEach(function (element) {
                 console.log(res_element);
