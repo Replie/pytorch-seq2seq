@@ -10,7 +10,7 @@ function submitdata() {
     res_element.empty();
     res_element.attr("hidden");
     $.getJSON( "_predict", {
-    seq_str: $("#input_seq").val(),
+    seq_str: btoa($("#input_seq").val()),
     checkpoint_val: $("#checkpoint_val").val(),
     format: "json"
   })
