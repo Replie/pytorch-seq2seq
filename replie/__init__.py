@@ -58,7 +58,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
             filter_pred=len_filter
         )
         dev = torchtext.data.TabularDataset(
-            path=data_file, format='json',
+            path=dev_data_file, format='json',
             fields={'src': ('src', src), 'tgt': ('tgt', tgt)},
             filter_pred=len_filter
         )
