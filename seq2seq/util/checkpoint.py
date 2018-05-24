@@ -6,6 +6,7 @@ import shutil
 import torch
 import dill
 
+
 class Checkpoint(object):
     """
     The Checkpoint class manages the saving and loading of a model during training. It allows training to be suspended
@@ -61,8 +62,10 @@ class Checkpoint(object):
              str: path to the saved checkpoint subdirectory
         """
         date_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
+        date = time.strftime('%Y_%m_%d', time.localtime())
 
-        self._path = os.path.join(experiment_dir, self.CHECKPOINT_DIR_NAME, date_time)
+        self._path = os.path.join(experiment_dir, self.CHECKPOINT_DIR_NAME, date, str(self.epoch),
+                                  date_time + '_S' + str(self.step))
         path = self._path
 
         if os.path.exists(path):
@@ -71,7 +74,7 @@ class Checkpoint(object):
         torch.save({'epoch': self.epoch,
                     'step': self.step,
                     'optimizer': self.optimizer
-                   },
+                    },
                    os.path.join(path, self.TRAINER_STATE_NAME))
         torch.save(self.model, os.path.join(path, self.MODEL_NAME))
 
@@ -95,10 +98,11 @@ class Checkpoint(object):
             resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
             model = torch.load(os.path.join(path, cls.MODEL_NAME))
         else:
-            resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME), map_location=lambda storage, loc: storage)
+            resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME),
+                                           map_location=lambda storage, loc: storage)
             model = torch.load(os.path.join(path, cls.MODEL_NAME), map_location=lambda storage, loc: storage)
 
-        model.flatten_parameters() # make RNN parameters contiguous
+        model.flatten_parameters()  # make RNN parameters contiguous
         with open(os.path.join(path, cls.INPUT_VOCAB_FILE), 'rb') as fin:
             input_vocab = dill.load(fin)
         with open(os.path.join(path, cls.OUTPUT_VOCAB_FILE), 'rb') as fin:
