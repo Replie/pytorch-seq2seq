@@ -21,7 +21,7 @@ def get_model(checkpoint_path):
 
 def predict(expt_dir, seq_str, date, epoch, step, n=3):
     seq = seq_str.strip().split()
-    checkpoint_path = os.path.join(Checkpoint.CHECKPOINT_DIR_NAME, date, epoch, step)
+    checkpoint_path = os.path.join(expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, date, epoch, step)
     seq2seq, input_vocab, output_vocab = get_model(checkpoint_path)
     beam_search = Seq2seq(seq2seq.encoder, TopKDecoder(seq2seq.decoder, 4))
     predictor = Predictor(beam_search, input_vocab, output_vocab)

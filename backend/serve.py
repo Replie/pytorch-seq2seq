@@ -62,8 +62,7 @@ app.config.update(dict(
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD=os.environ.get("DEV_PASS", "SECRET"),
-    EXPERIMENT_PATH=os.environ.get("EXPERIMENT_PATH",
-                                   os.path.join(dirname(dirname(os.path.abspath(__file__))), 'experiment'))
+    EXPERIMENT_PATH=os.environ.get("EXPERIMENT_PATH")
 ))
 
 BASE_CHECKPOINT_DIR = os.path.join(app.config.get('EXPERIMENT_PATH'), Checkpoint.CHECKPOINT_DIR_NAME)
