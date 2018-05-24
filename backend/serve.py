@@ -111,6 +111,12 @@ def index():
     return render_template('index.html', models=models)
 
 
+@app.route("/checkpoints", methods=["GET"])
+def checkpoints():
+    models = sorted(checkpoints)[-40:]
+    return jsonify(checkpoints=models)
+
+
 def main(host="0.0.0.0", port=5000):
     app.run(host=host, port=port, debug=True)
 
