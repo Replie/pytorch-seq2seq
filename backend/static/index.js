@@ -12,7 +12,7 @@ function set_checkpoint(value) {
             res_element.empty();
             let epochs_val = $("#epochs_val");
             epochs_val.val('');
-            epochs_val.text('');
+            epochs_val.text('Epochs');
             results.forEach(function (element) {
                 console.log(res_element);
                 res_element.append(
@@ -32,7 +32,7 @@ function get_epoches(param) {
     epochs_val.text(value);
     let steps_val = $("#steps_val");
     steps_val.val('');
-    steps_val.text('');
+    steps_val.text('Steps');
     $.getJSON("_get_steps", {
         date: checkpoint_val,
         epoch: value,
