@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--num_epochs', dest='num_epochs',
                         default=500,
-                        help='num_epochs ')
+                        help='num_epochs')
 
     opt = parser.parse_args()
 
@@ -76,4 +76,4 @@ if __name__ == '__main__':
 
     default_data_dir = os.path.join(dirname(dirname(os.path.abspath(__file__))))
 
-    replie.run_training(opt, default_data_dir, opt.num_epochs)
+    replie.run_training(opt, default_data_dir, int(opt.num_epochs))
