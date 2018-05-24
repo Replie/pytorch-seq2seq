@@ -107,14 +107,8 @@ def predict():
 
 @app.route("/", methods=["GET"])
 def index():
-    models = sorted(checkpoints)[-30:]
-    return render_template('index.html', models=models)
-
-
-@app.route("/checkpoints", methods=["GET"])
-def checkpoints():
     models = sorted(checkpoints)[-20:]
-    return jsonify(checkpoints=models)
+    return render_template('index.html', models=models)
 
 
 def main(host="0.0.0.0", port=5000):
