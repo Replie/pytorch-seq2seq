@@ -116,7 +116,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
 
         # train
 
-        num_epochs = 500
+        num_epochs = num_epochs
         batch_size = 32
         checkpoint_every = num_epochs / 10
         print_every = num_epochs / 100
