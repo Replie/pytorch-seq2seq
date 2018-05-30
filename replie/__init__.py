@@ -42,7 +42,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
         tgt = TargetField()
         max_len = 50
 
-        data_file = os.path.join(default_data_dir, opt.train_path, 'test.csv')
+        data_file = os.path.join(default_data_dir, opt.train_path, 'train.csv')
 
         logging.info("Starting new Training session on %s", data_file)
 
