@@ -80,11 +80,11 @@ def run_training(opt, default_data_dir, num_epochs=100):
         weight = torch.ones(len(tgt.vocab))
         pad = tgt.vocab.stoi[tgt.pad_token]
         loss = Perplexity(weight, pad)
-        if torch.cuda.is_available():
-            logging.info("Yayyy We got CUDA!!!")
-            loss.cuda()
-        else:
-            logging.info("No cuda available device found running on cpu")
+        # if torch.cuda.is_available():
+        #     logging.info("Yayyy We got CUDA!!!")
+        #     loss.cuda()
+        # else:
+        #     logging.info("No cuda available device found running on cpu")
 
         seq2seq = None
         optimizer = None
@@ -105,8 +105,8 @@ def run_training(opt, default_data_dir, num_epochs=100):
                                  eos_id=tgt.eos_id, sos_id=tgt.sos_id)
 
             seq2seq = Seq2seq(encoder, decoder)
-            if torch.cuda.is_available():
-                seq2seq.cuda()
+            # if torch.cuda.is_available():
+            #     seq2seq.cuda()
 
             for param in seq2seq.parameters():
                 param.data.uniform_(-0.08, 0.08)
