@@ -139,6 +139,14 @@ def predict():
         return jsonify({"error": "Bad Request"}), 400
 
 
+@app.after_request
+def add_header(response):
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    if 'Cache-Control' not in response.headers:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
+
+
 @app.route("/", methods=["GET"])
 def index():
     models = sorted(get_dates())
