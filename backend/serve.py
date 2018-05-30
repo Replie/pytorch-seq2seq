@@ -124,14 +124,17 @@ def predict():
             return jsonify({"error": "Bad Request",
                             "error_description": "expected Base64 encoded data"}), 400
         date = args.get('date', "2018_05_24")
-        epoch = args.get('epoch', "200")
-        step = args.get('step', "2018_05_24_20_28_51_S3600")
-        suggestions = predictor.predict(expt_dir=app.config.get('EXPERIMENT_PATH'),
-                                        date=date,
-                                        epoch=epoch,
-                                        step=step,
-                                        seq_str=seq_str, n=3)
-        return jsonify({"data": {"results": [' '.join(x).strip() for x in suggestions]}}), 200
+        epoch = args.get('epoch', "300")
+        step = args.get('step', "2018_05_24_23_11_33_S5400")
+        try:
+            suggestions = predictor.predict(expt_dir=app.config.get('EXPERIMENT_PATH'),
+                                            date=date,
+                                            epoch=epoch,
+                                            step=step,
+                                            seq_str=seq_str, n=3)
+            return jsonify({"data": {"results": [' '.join(x).strip() for x in suggestions]}}), 200
+        except Exception:
+            return jsonify({"error": "Bad Request", "error_description": "expected Base64 encoded data"}), 400
     else:
         return jsonify({"error": "Bad Request"}), 400
 
