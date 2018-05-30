@@ -42,7 +42,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
         tgt = TargetField()
         max_len = 50
 
-        data_file = os.path.join(default_data_dir, opt.train_path, 'data.txt')
+        data_file = os.path.join(default_data_dir, opt.train_path, 'test.csv')
 
         logging.info("Starting new Training session on %s", data_file)
 
@@ -51,17 +51,17 @@ def run_training(opt, default_data_dir, num_epochs=100):
                    and (len(example.src) > 0) and (len(example.tgt) > 0)
 
         train = torchtext.data.TabularDataset(
-            path=data_file, format='json',
-            fields={'src': ('src', src), 'tgt': ('tgt', tgt)},
+            path=data_file, format='csv',
+            fields=[('src', src), ('tgt', tgt)],
             filter_pred=len_filter
         )
 
         dev = None
         if opt.no_dev is False:
-            dev_data_file = os.path.join(default_data_dir, opt.train_path, 'dev-data.txt')
+            dev_data_file = os.path.join(default_data_dir, opt.train_path, 'test.csv')
             dev = torchtext.data.TabularDataset(
-                path=dev_data_file, format='json',
-                fields={'src': ('src', src), 'tgt': ('tgt', tgt)},
+                path=dev_data_file, format='csv',
+                fields=[('src', src), ('tgt', tgt)],
                 filter_pred=len_filter
             )
 
@@ -114,9 +114,9 @@ def run_training(opt, default_data_dir, num_epochs=100):
         # Optimizer and learning rate scheduler can be customized by
         # explicitly constructing the objects and pass to the trainer.
 
-        optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
-        scheduler = StepLR(optimizer.optimizer, 1)
-        optimizer.set_scheduler(scheduler)
+        # optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
+        # scheduler = StepLR(optimizer.optimizer, 1)
+        # optimizer.set_scheduler(scheduler)
 
         # train
 

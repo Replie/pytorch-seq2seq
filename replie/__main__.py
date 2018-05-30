@@ -63,7 +63,7 @@ if __name__ == '__main__':
                         default=False,
                         help='Indicates if training has to be resumed from the latest checkpoint')
     parser.add_argument('--log-level', dest='log_level',
-                        default='info',
+                        default='debug',
                         help='Logging level.')
 
     parser.add_argument('--no-dev', action='store_true', dest='no_dev',
