@@ -7,7 +7,6 @@ Created on 05/05/2018
 """
 import base64
 import os
-from os.path import dirname
 
 from backend import predictor
 from flask import Flask, jsonify, request, render_template

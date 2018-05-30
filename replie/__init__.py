@@ -12,6 +12,9 @@ import logging
 
 import torch
 import torchtext
+from torch.optim.lr_scheduler import StepLR
+
+from seq2seq.optim import Optimizer
 
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq, TopKDecoder
@@ -40,15 +43,10 @@ def run_training(opt, default_data_dir, num_epochs=100):
         max_len = 50
 
         data_file = os.path.join(default_data_dir, opt.train_path, 'data.txt')
-        dev_data_file = os.path.join(default_data_dir, opt.train_path, 'dev-data.txt')
 
         logging.info("Starting new Training session on %s", data_file)
 
         def len_filter(example):
-            return (len(example.src) <= max_len) and (len(example.tgt) <= max_len) \
-                   and (len(example.src) > 0) and (len(example.tgt) > 0)
-
-        def char_len_filter(example):  # TODO different LENGHT
             return (len(example.src) <= max_len) and (len(example.tgt) <= max_len) \
                    and (len(example.src) > 0) and (len(example.tgt) > 0)
 
@@ -57,11 +55,16 @@ def run_training(opt, default_data_dir, num_epochs=100):
             fields={'src': ('src', src), 'tgt': ('tgt', tgt)},
             filter_pred=len_filter
         )
-        dev = torchtext.data.TabularDataset(
-            path=dev_data_file, format='json',
-            fields={'src': ('src', src), 'tgt': ('tgt', tgt)},
-            filter_pred=len_filter
-        )
+
+        dev = None
+        if opt.no_dev is False:
+            dev_data_file = os.path.join(default_data_dir, opt.train_path, 'dev-data.txt')
+            dev = torchtext.data.TabularDataset(
+                path=dev_data_file, format='json',
+                fields={'src': ('src', src), 'tgt': ('tgt', tgt)},
+                filter_pred=len_filter
+            )
+
         src.build_vocab(train, max_size=50000)
         tgt.build_vocab(train, max_size=50000)
         input_vocab = src.vocab
@@ -108,12 +111,12 @@ def run_training(opt, default_data_dir, num_epochs=100):
             for param in seq2seq.parameters():
                 param.data.uniform_(-0.08, 0.08)
 
-            # Optimizer and learning rate scheduler can be customized by
-            # explicitly constructing the objects and pass to the trainer.
-            #
-            # optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
-            # scheduler = StepLR(optimizer.optimizer, 1)
-            # optimizer.set_scheduler(scheduler)
+        # Optimizer and learning rate scheduler can be customized by
+        # explicitly constructing the objects and pass to the trainer.
+
+        optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
+        scheduler = StepLR(optimizer.optimizer, 1)
+        optimizer.set_scheduler(scheduler)
 
         # train
 
@@ -141,9 +144,11 @@ def run_training(opt, default_data_dir, num_epochs=100):
                           resume=opt.resume)
 
         evaluator = Evaluator(loss=loss, batch_size=batch_size)
-        dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
-        logging.info("Dev Loss: %s", dev_loss)
-        logging.info("Accuracy: %s", dev_loss)
+
+        if opt.no_dev is False:
+            dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
+            logging.info("Dev Loss: %s", dev_loss)
+            logging.info("Accuracy: %s", dev_loss)
 
     beam_search = Seq2seq(seq2seq.encoder, TopKDecoder(seq2seq.decoder, 4))
 

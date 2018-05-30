@@ -1,11 +1,9 @@
-{"src": "looks like the market ain't crazy about our q . you get the go ahead from whalley on pg e ?", "tgt": "yes lisa went to their lawyer david this morn"}
-{"src": "coral jeff whitnah relaint steve mcginn ", "tgt": "williams contact ?"}
 {"src": "just how many ene people were busy selling gas this weekend vs outside counterparties ?", "tgt": "from saturday monday . .did trades exactly half internal . how'd george do ?"}
 {"src": "opps can i scoot you to thursday ?", "tgt": "you got it"}
 {"src": "the agreement was papered by enron", "tgt": "i am sorry who drafted the amendment ?"}
 {"src": "yeah but i am in a depressed mood and i want to go home and sleep .", "tgt": "why thats no good"}
-{"src": "is pm ok ?", "tgt": "sure"}
-{"src": "im only kidding", "tgt": "whatever ."}
+{"src": "is 7pm ok ?", "tgt": "sure"}
+{"src": "im only kidding", "tgt": "whatever."}
 {"src": "do you have quantities at price or is it all calculations ? thanx laura", "tgt": "everything is lumped together meaning price basis and index in that file . dg"}
 {"src": "i need one of those . jilly", "tgt": "that is what i plan on going as for halloween pl"}
 {"src": "and why would you be a saint ? what did you do ?", "tgt": "just for the stuff i have put up with im pretty sure anyone else would have killed her"}
