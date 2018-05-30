@@ -2,8 +2,8 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-device = torch.cuda if torch.cuda.is_available() else torch
-
+# device = torch.cuda if torch.cuda.is_available() else torch
+device = torch
 
 def _inflate(tensor, times, dim):
     """
@@ -227,8 +227,8 @@ class TopKDecoder(torch.nn.Module):
         # the last hidden state of decoding.
 
         cuda0 = None
-        if torch.cuda.is_available():
-            cuda0 = torch.device('cuda:0')
+        # if torch.cuda.is_available():
+        #     cuda0 = torch.device('cuda:0')
 
         if lstm:
             state_size = nw_hidden[0][0].size()

@@ -10,10 +10,10 @@ import torch.nn.functional as F
 from .attention import Attention
 from .baseRNN import BaseRNN
 
-if torch.cuda.is_available():
-    import torch.cuda as device
-else:
-    import torch as device
+# if torch.cuda.is_available():
+#     import torch.cuda as device
+# else:
+import torch as device
 
 
 class DecoderRNN(BaseRNN):
