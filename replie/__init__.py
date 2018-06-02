@@ -123,7 +123,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
         num_epochs = num_epochs
         batch_size = 32
         checkpoint_every = num_epochs / 10
-        print_every = num_epochs / 100
+        print_every = round(num_epochs / 100)
 
         properties = dict(batch_size=batch_size,
                           checkpoint_every=checkpoint_every,
