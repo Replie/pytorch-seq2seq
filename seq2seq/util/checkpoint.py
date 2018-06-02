@@ -128,4 +128,8 @@ class Checkpoint(object):
         """
         checkpoints_path = os.path.join(experiment_path, cls.CHECKPOINT_DIR_NAME)
         all_times = sorted(os.listdir(checkpoints_path), reverse=True)
-        return os.path.join(checkpoints_path, all_times[0])
+        epoch_path = os.path.join(checkpoints_path, all_times[0])
+        all_epoch = sorted(os.listdir(epoch_path), reverse=True)
+        step_path = os.path.join(epoch_path, all_epoch[0])
+        all_step = sorted(os.listdir(step_path), reverse=True)
+        return os.path.join(step_path, all_step[0])
