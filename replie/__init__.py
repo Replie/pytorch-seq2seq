@@ -42,7 +42,7 @@ def run_training(opt, default_data_dir, num_epochs=100):
         tgt = TargetField()
         max_len = 50
 
-        data_file = os.path.join(default_data_dir, opt.train_path, 'train.csv')
+        data_file = os.path.join(default_data_dir, opt.train_path, 'val5.csv')
 
         logging.info("Starting new Training session on %s", data_file)
 
@@ -58,15 +58,15 @@ def run_training(opt, default_data_dir, num_epochs=100):
 
         dev = None
         if opt.no_dev is False:
-            dev_data_file = os.path.join(default_data_dir, opt.train_path, 'test.csv')
+            dev_data_file = os.path.join(default_data_dir, opt.train_path, 'test5.csv')
             dev = torchtext.data.TabularDataset(
                 path=dev_data_file, format='csv',
                 fields=[('src', src), ('tgt', tgt)],
                 filter_pred=len_filter
             )
 
-        src.build_vocab(train, max_size=50000)
-        tgt.build_vocab(train, max_size=50000)
+        src.build_vocab(train, max_size=70000)
+        tgt.build_vocab(train, max_size=70000)
         input_vocab = src.vocab
         output_vocab = tgt.vocab
 

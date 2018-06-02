@@ -67,7 +67,7 @@ if __name__ == '__main__':
                         help='Logging level.')
 
     parser.add_argument('--no-dev', action='store_true', dest='no_dev',
-                        default=False,
+                        default=True,
                         help='Logging level.')
 
     parser.add_argument('--num_epochs', dest='num_epochs',
